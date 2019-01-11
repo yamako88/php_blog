@@ -58,25 +58,22 @@ $_SESSION['join'] = $_POST;
 
 $text = htmlspecialchars($_POST["text"]);
 //    投稿を記録する
-    $stmt = $pdo->prepare('insert into submission_form (title, text, date, category_id, user_id) values(:title, :text, now(), :category_id, :user_id)');
-    $stmt->bindParam(':title', $_POST['title'], PDO::PARAM_STR);
-    $stmt->bindParam(':text', $text, PDO::PARAM_STR);
-    $stmt->bindParam(':category_id', $_POST['category_id'], PDO::PARAM_STR);
-    $stmt->bindParam(':user_id', $user['id'], PDO::PARAM_STR);
+    $stmt = $pdo->prepare('insert into submission_form (title, text, date, category_id, user_id) values(?, ?, now(), ?, ?)');
+    $stmt->bindParam(1, $_POST['title'], PDO::PARAM_STR);
+    $stmt->bindParam(2, $text, PDO::PARAM_STR);
+    $stmt->bindParam(3, $_POST['category_id'], PDO::PARAM_STR);
+    $stmt->bindParam(4, $user['id'], PDO::PARAM_STR);
 
     $stmt->execute();
-//var_dump($pdo->lastInsertId('id'));
 $tagform = $pdo->lastInsertId('id');
+
 //    投稿を記録する(中間テーブル)
 $tags = $_POST["tags"];
-//var_dump($tags);
-//$titles = $_POST["titles"];
-//$len = mb_strlen($titles,"utf-8");
 
 foreach ($tags as $val) {
-    $stmt = $pdo->prepare('insert into form_tag (form_id, tag_id) values(:form_id, :tag_id)');
-    $stmt->bindParam(':form_id', $tagform, PDO::PARAM_STR);
-    $stmt->bindParam(':tag_id', $val, PDO::PARAM_STR);
+    $stmt = $pdo->prepare('insert into form_tag (form_id, tag_id) values(?, ?)');
+    $stmt->bindParam(1, $tagform, PDO::PARAM_STR);
+    $stmt->bindParam(2, $val, PDO::PARAM_STR);
     $stmt->execute();
 
 }
